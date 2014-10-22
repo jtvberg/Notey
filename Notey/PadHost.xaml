@@ -1,0 +1,33 @@
+﻿<Window x:Class="Notey.PadHost"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:Notey="clr-namespace:Notey"
+        Title="" Height="350" Width="525" WindowState="Maximized" WindowStartupLocation="CenterScreen" ShowInTaskbar="False" ResizeMode="NoResize" Background="{x:Null}" Closing="PadHostClosing" MouseRightButtonDown="PadHostMouseRightButtonDown" ContextMenuOpening="PadHostContextMenuOpening" ContextMenuClosing="PadHostContextMenuClosing" MouseLeftButtonDown="PadHostMouseLeftButtonDown" WindowStyle="None" AllowsTransparency="True">
+    <Window.ContextMenu>
+        <ContextMenu Name="PadHostCm" StaysOpen="True">
+            <MenuItem x:Name="MiLockPad" Header="Lock" Click="MiLockPadClick" />
+            <MenuItem x:Name="MiEditPad" Header="Edit" Click="MiEditPadClick" />
+            <MenuItem x:Name="MiColorPad" Header="Format" Click="MiColorPadClick" />
+            <MenuItem x:Name="MiCopyContentPad" Header="Copy Content" Click="MiCopyContentPadClick" />
+            <MenuItem Header="New">
+                <MenuItem x:Name="MiNewStaticLabel" Header="Label" Click="MiNewLabelClick" />
+                <MenuItem x:Name="MiNewRichNote" Header="RichNote" Click="MiNewRichNoteClick" />
+                <MenuItem x:Name="MiNewTimeDate" Header="TimeDate" Click="MiNewTimeDateClick" />
+                <MenuItem x:Name="MiNewCalendar" Header="Calendar" Click="MiNewCalendarClick" />
+                <MenuItem x:Name="MiNewStaticImage" Header="Image" Click="MiNewStaticImageClick" />
+            </MenuItem>
+            <MenuItem x:Name="MiDelete" Header="Delete" Click="MiDeleteClick" />
+            <MenuItem x:Name="MiExit" Header="Exit" Click="MiExitClick" />
+        </ContextMenu>
+    </Window.ContextMenu>
+    <Border x:Name="PadHostOuterBorder">
+        <Grid x:Name="PadHostLayoutGrid">
+            <Image x:Name="PadHostBackground" >
+                <Image.Effect>
+                    <BlurEffect Radius="10" />
+                </Image.Effect>
+            </Image>
+            <Canvas x:Name="PadHostContainer" Margin="10" />
+        </Grid>
+    </Border>
+</Window>
