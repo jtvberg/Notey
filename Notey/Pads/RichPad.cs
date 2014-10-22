@@ -40,7 +40,7 @@
             this.PadContainer.RowDefinitions.Add(new RowDefinition() { Height = new GridLength(10) });
 
             this.Width = 300;
-            this.FontSize = 16;
+            this.FontSize = 20;
 
             this.SetColors();
 
