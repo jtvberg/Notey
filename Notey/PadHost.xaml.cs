@@ -13,19 +13,52 @@
 
     public partial class PadHost : Window
     {
+        //dynamic d = Activator.CreateInstance(Type.GetType("Notey.LabelPad"));
+        //TreeHelpers.ShallowConvert<Pad, LabelPad>(p, d);
+        //this.PadHostContainer.Children.Add(d);
+
+        private string saveFile = @".\Notey.xml";
+
+        private bool isChangingColor;
+
+        private bool isEditing = false;
+
+        private bool isCopyingContent = false;
+
+        private Pad ClickedSourcePad;
+
         public PadHost()
         {
             InitializeComponent();
             this.LoadPads();
         }
 
-        private string saveFile = @".\Notey.xml";
+        public void ClearEditFocus()
+        {
+            this.PadHostBackground.Source = null;
+            Keyboard.ClearFocus();
+            this.TogglePadsVisibiliity(true);
+        }
 
-        private Pad ClickedSourcePad;
+        private static BitmapSource CopyScreen()
+        {
+            var width = (int)SystemParameters.PrimaryScreenWidth;
+            var height = (int)SystemParameters.PrimaryScreenHeight;
 
-        //dynamic d = Activator.CreateInstance(Type.GetType("Notey.LabelPad"));
-        //TreeHelpers.ShallowConvert<Pad, LabelPad>(p, d);
-        //this.PadHostContainer.Children.Add(d);
+            using (var screenBmp = new Bitmap(width, height, System.Drawing.Imaging.PixelFormat.Format32bppArgb))
+            {
+                using (var bmpGraphics = Graphics.FromImage(screenBmp))
+                {
+                    bmpGraphics.CopyFromScreen(0, 0, 0, 0, new System.Drawing.Size(width, height));
+                    return Imaging.CreateBitmapSourceFromHBitmap(
+                        screenBmp.GetHbitmap(),
+                        IntPtr.Zero,
+                        Int32Rect.Empty,
+                        BitmapSizeOptions.FromEmptyOptions());
+                }
+            }
+        }
+
         private void LoadPads()
         {
             if (File.Exists(saveFile))
@@ -332,12 +365,79 @@
             }
         }
 
+        private void EditPad()
+        {
+            ((Pad)this.ClickedSourcePad).StartEdit();
+            if (this.ClickedSourcePad.GetType() == typeof(LabelPad))
+            {
+                BitmapSource bs = CopyScreen();
+                this.PadHostBackground.Source = bs;
+                this.TogglePadsVisibiliity(false);
+            }
+
+            this.isEditing = false;
+        }
+
+        private void CopyPad()
+        {
+            ((Pad)this.ClickedSourcePad).CopyContent();
+            this.isCopyingContent = false;
+        }
+
+        private void ChangeColor()
+        {
+            ((Pad)this.ClickedSourcePad).ChangeColor();
+            this.isChangingColor = false;
+        }
+
         private void PadHostClosing(object sender, System.ComponentModel.CancelEventArgs e)
         {
             this.SavePads();
         }
 
-        private bool isChangingColor;
+        private void PadHostMouseRightButtonDown(object sender, MouseButtonEventArgs e)
+        {
+            UIElement uie = (UIElement)e.OriginalSource;
+            this.ClickedSourcePad = TreeHelpers.FindParent<Pad>(uie);
+        }
+
+        private void PadHostContextMenuOpening(object sender, ContextMenuEventArgs e)
+        {
+            if (this.ClickedSourcePad.IsLocked)
+            {
+                this.MiLockPad.Header = "UnLock";
+            }
+            else
+            {
+                this.MiLockPad.Header = "Lock";
+            }
+        }
+
+        private void PadHostContextMenuClosing(object sender, ContextMenuEventArgs e)
+        {
+            if (this.isEditing)
+            {
+                this.EditPad();
+            }
+
+            if (this.isCopyingContent)
+            {
+                this.CopyPad();
+            }
+
+            if (this.isChangingColor)
+            {
+                this.ChangeColor();
+            }
+        }
+
+        private void PadHostMouseLeftButtonDown(object sender, MouseButtonEventArgs e)
+        {
+            this.ClearEditFocus();
+            UIElement uie = (UIElement)e.OriginalSource;
+            this.ClickedSourcePad = TreeHelpers.FindParent<Pad>(uie);
+            this.SetZIndex();
+        }
 
         private void MiColorPadClick(object sender, RoutedEventArgs e)
         {
@@ -355,12 +455,6 @@
         private void MiExitClick(object sender, RoutedEventArgs e)
         {
             this.Close();
-        }
-
-        private void PadHostMouseRightButtonDown(object sender, MouseButtonEventArgs e)
-        {
-            UIElement uie = (UIElement)e.OriginalSource;
-            this.ClickedSourcePad = TreeHelpers.FindParent<Pad>(uie);
         }
 
         private void MiNewLabelClick(object sender, RoutedEventArgs e)
@@ -397,8 +491,6 @@
             this.PadHostContainer.Children.Add(new ImagePad());
         }
 
-        private bool isEditing = false;
-
         private void MiEditPadClick(object sender, RoutedEventArgs e)
         {
             if (this.ClickedSourcePad != null)
@@ -407,32 +499,11 @@
             }
         }
 
-        private bool isCopyingContent = false;
-
         private void MiCopyContentPadClick(object sender, RoutedEventArgs e)
         {
             if (this.ClickedSourcePad != null)
             {
                 this.isCopyingContent = true;
-            }
-        }
-
-        private static BitmapSource CopyScreen()
-        {
-            var width = (int)SystemParameters.PrimaryScreenWidth;
-            var height = (int)SystemParameters.PrimaryScreenHeight;
-
-            using (var screenBmp = new Bitmap(width, height, System.Drawing.Imaging.PixelFormat.Format32bppArgb))
-            {
-                using (var bmpGraphics = Graphics.FromImage(screenBmp))
-                {
-                    bmpGraphics.CopyFromScreen(0, 0, 0, 0, new System.Drawing.Size(width, height));
-                    return Imaging.CreateBitmapSourceFromHBitmap(
-                        screenBmp.GetHbitmap(),
-                        IntPtr.Zero,
-                        Int32Rect.Empty,
-                        BitmapSizeOptions.FromEmptyOptions());
-                }
             }
         }
 
@@ -450,74 +521,9 @@
             }
         }
 
-        private void PadHostContextMenuOpening(object sender, ContextMenuEventArgs e)
+        private void MiSaveClick(object sender, RoutedEventArgs e)
         {
-            if (this.ClickedSourcePad.IsLocked)
-            {
-                this.MiLockPad.Header = "UnLock";
-            }
-            else
-            {
-                this.MiLockPad.Header = "Lock";
-            }
-        }
-
-        private void PadHostContextMenuClosing(object sender, ContextMenuEventArgs e)
-        {
-            if (this.isEditing)
-            {
-                this.EditPad();
-            }
-
-            if (this.isCopyingContent)
-            {
-                this.CopyPad();
-            }
-
-            if (this.isChangingColor)
-            {
-                this.ChangeColor();
-            }
-        }
-
-        private void EditPad()
-        {
-            ((Pad)this.ClickedSourcePad).StartEdit();
-            if (this.ClickedSourcePad.GetType() == typeof(LabelPad))
-            {
-                BitmapSource bs = CopyScreen();
-                this.PadHostBackground.Source = bs;
-                this.TogglePadsVisibiliity(false);
-            }
-
-            this.isEditing = false;
-        }
-
-        private void CopyPad()
-        {
-            ((Pad)this.ClickedSourcePad).CopyContent();
-            this.isCopyingContent = false;
-        }
-
-        private void ChangeColor()
-        {
-            ((Pad)this.ClickedSourcePad).ChangeColor();
-            this.isChangingColor = false;
-        }
-
-        private void PadHostMouseLeftButtonDown(object sender, MouseButtonEventArgs e)
-        {
-            this.ClearEditFocus();
-            UIElement uie = (UIElement)e.OriginalSource;
-            this.ClickedSourcePad = TreeHelpers.FindParent<Pad>(uie);
-            this.SetZIndex();
-        }
-
-        public void ClearEditFocus()
-        {
-            this.PadHostBackground.Source = null;
-            Keyboard.ClearFocus();
-            this.TogglePadsVisibiliity(true);
+            this.SavePads();
         }
 
         private void TogglePadsVisibiliity(bool visible, bool preserveEdit = true)

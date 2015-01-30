@@ -28,11 +28,6 @@
             this.RegisterEvents();
         }
 
-        private void RegisterEvents()
-        {
-            this.richNoteEditor.TextChanged += richNoteEditorTextChanged;
-        }
-
         public override void Load()
         {
             this.PadContainer.RowDefinitions.Add(new RowDefinition() { Height = new GridLength(10) });
@@ -86,6 +81,22 @@
             this.richNoteEditor.Background = new SolidColorBrush(Color.FromArgb(66, this.PadBackcolor.R, this.PadBackcolor.G, this.PadBackcolor.B));
         }
 
+        public override void CopyContent(bool retry = false)
+        {
+            try
+            {
+                if (retry)
+                { System.Threading.Thread.Sleep(1000); }
+                this.richNoteEditor.SelectAll();
+                this.richNoteEditor.Copy();
+            }
+            catch
+            {
+                if (!retry)
+                { this.CopyContent(true); }
+            }
+        }
+
         public void NewNote()
         {
             Paragraph p = new Paragraph();
@@ -110,26 +121,15 @@
             this.PadSerialContent = XamlWriter.Save(this.flowDoc);
         }
 
+        private void RegisterEvents()
+        {
+            this.richNoteEditor.TextChanged += richNoteEditorTextChanged;
+        }
+
         private void richNoteEditorTextChanged(object sender, TextChangedEventArgs e)
         {
             if (this.isLoaded)
             { this.SaveRtf(); }
-        }
-
-        public override void CopyContent(bool retry = false)
-        {
-            try
-            {
-                if (retry)
-                { System.Threading.Thread.Sleep(1000); }
-                this.richNoteEditor.SelectAll();
-                this.richNoteEditor.Copy();
-            }
-            catch
-            {
-                if (!retry)
-                { this.CopyContent(true); }
-            }
         }
     }
 }

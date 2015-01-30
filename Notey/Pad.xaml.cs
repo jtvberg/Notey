@@ -61,6 +61,16 @@
             this.Background = new SolidColorBrush(this.PadBackcolor);
         }
 
+        public virtual void SetUnderline() { }
+
+        public virtual void StartEdit() { }
+
+        public virtual void ChangeColor() { }
+
+        public virtual void SetFontStyle() { }
+
+        public virtual void SetFontWeight() { }
+
         private void RegisterEvents()
         {
             this.MouseLeftButtonDown += PadMouseLeftButtonDown;
@@ -106,10 +116,6 @@
             this.ReleaseMouseCapture();
         }
 
-        public virtual void StartEdit() { }
-
-        public virtual void ChangeColor() { }
-
         private void BtnFontSizeIncreaseClick(object sender, RoutedEventArgs e)
         {
             this.FontSize+=2;
@@ -126,23 +132,17 @@
             this.SetFontWeight();
         }
 
-        public virtual void SetFontWeight() { }
-
         private void BtnItalicClick(object sender, RoutedEventArgs e)
         {
             this.PadFontStyle = this.PadFontStyle == FontStyles.Italic ? FontStyles.Normal : FontStyles.Italic;
             this.SetFontStyle();
         }
 
-        public virtual void SetFontStyle() { }
-
         private void BtnUnderlineClick(object sender, RoutedEventArgs e)
         {
             this.PadUnderlined = !this.PadUnderlined;
             this.SetUnderline();
         }
-
-        public virtual void SetUnderline() { }
 
         private void ComboFontFamilySelectionChanged(object sender, SelectionChangedEventArgs e)
         {

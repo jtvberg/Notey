@@ -6,18 +6,19 @@
     <Window.ContextMenu>
         <ContextMenu Name="PadHostCm" StaysOpen="True">
             <MenuItem x:Name="MiLockPad" Header="Lock" Click="MiLockPadClick" />
-            <!--<MenuItem x:Name="MiEditPad" Header="Edit" Click="MiEditPadClick" />-->
             <MenuItem x:Name="MiColorPad" Header="Format" Click="MiColorPadClick" />
             <MenuItem x:Name="MiCopyContentPad" Header="Copy Content" Click="MiCopyContentPadClick" />
             <MenuItem x:Name="MiNewRichNote" Header="New Note" Click="MiNewRichNoteClick" />
             <!--<MenuItem Header="New">
+                <MenuItem x:Name="MiEditPad" Header="Edit" Click="MiEditPadClick" />
                 <MenuItem x:Name="MiNewStaticLabel" Header="Label" Click="MiNewLabelClick" />
-                <MenuItem x:Name="MiNewRichNote" Header="RichNote" Click="MiNewRichNoteClick" />
+                <MenuItem x:Name="MiNewNote" Header="RichNote" Click="MiNewRichNoteClick" />
                 <MenuItem x:Name="MiNewTimeDate" Header="TimeDate" Click="MiNewTimeDateClick" />
                 <MenuItem x:Name="MiNewCalendar" Header="Calendar" Click="MiNewCalendarClick" />
                 <MenuItem x:Name="MiNewStaticImage" Header="Image" Click="MiNewStaticImageClick" />
             </MenuItem>-->
             <MenuItem x:Name="MiDelete" Header="Delete" Click="MiDeleteClick" />
+            <MenuItem x:Name="MiSave" Header="Save" Click="MiSaveClick" />
             <MenuItem x:Name="MiExit" Header="Exit" Click="MiExitClick" />
         </ContextMenu>
     </Window.ContextMenu>
