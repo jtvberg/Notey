@@ -115,5 +115,21 @@
             if (this.isLoaded)
             { this.SaveRtf(); }
         }
+
+        public override void CopyContent(bool retry = false)
+        {
+            try
+            {
+                if (retry)
+                { System.Threading.Thread.Sleep(1000); }
+                this.richNoteEditor.SelectAll();
+                this.richNoteEditor.Copy();
+            }
+            catch
+            {
+                if (!retry)
+                { this.CopyContent(true); }
+            }
+        }
     }
 }
